@@ -20,5 +20,5 @@ Este proyecto es un *parseador de logs* en Node.js que monitorea una carpeta en 
 1. *Clona el repositorio*:
 
    ```bash
-   git clone https://github.com/tu-usuario/log-parser.git
+   git clone https://github.com/Bissuett729/LOG-PARSER.git
    cd log-parser
