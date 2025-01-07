@@ -1,7 +1,9 @@
-const chokidar = require("chokidar");
-const path = require("path");
-const fs = require("fs");
-const { processLog } = require("./logProcessor");
+import chokidar from 'chokidar'
+import path from 'path'
+import fs from "fs"
+import { processLog } from './logProcessor.js';
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
+import chalk from "chalk";
 
 const logsDirectory = path.join(__dirname, "logs");
 
@@ -26,18 +28,30 @@ const processQueue = async () => {
   const filePath = filesQueue.shift(); // Extrae el primer archivo de la cola
   currentProcessingCount++;
 
-  console.log();
-  console.log();
-  console.log('=====================================');
-  console.log();
-  console.log(`Procesando archivo: ${filePath}`);
+  // Mostrar mensaje con formato
+  console.log(chalk.yellow("\n====================================="));
+  console.log(chalk.blue(`\nPROCESANDO ARCHIVO: ${filePath}`));
 
   // Lee y procesa el archivo
   try {
     const data = await fs.promises.readFile(filePath, "utf8");
-    processLog(data);
+    const { finalStatuses, startTimes, endTimes } = processLog(data);
+
+    // Mostrar resultados con formato
+    console.log(chalk.yellow("\nVARIABLES OBTENIDAS:"));
+    finalStatuses.forEach((status, index) => {
+      console.log(chalk.cyan(`- FINAL STATUS ${index + 1}: ${status}`));
+    });
+    startTimes.forEach((time, index) => {
+      console.log(chalk.cyan(`- START TIME ${index + 1}: ${time}`));
+    });
+    endTimes.forEach((time, index) => {
+      console.log(chalk.cyan(`- FINAL TIME ${index + 1}: ${time}`));
+    });
+    console.log(chalk.yellow("\n====================================="));
+    
   } catch (err) {
-    console.error(`Error al leer el archivo ${filePath}:`, err);
+    console.error(chalk.red(`Error al leer el archivo ${filePath}:`, err));
   }
 
   currentProcessingCount--;
@@ -57,7 +71,7 @@ const watcher = chokidar.watch(logsDirectory, {
 
 // Evento cuando se agrega un archivo nuevo
 watcher.on("add", (filePath) => {
-  console.log(`Nuevo archivo detectado: ${filePath}`);
+  console.log(chalk.green(`\nNUEVO ARCHIVO DETECTADO: ${filePath}`));
 
   // Verificar si el archivo tiene la extensión .log
   if (path.extname(filePath) === ".log") {
@@ -65,6 +79,7 @@ watcher.on("add", (filePath) => {
     filesQueue.push(filePath);
     processQueue(); // Procesar la cola
   } else {
-    console.log(`Archivo ignorado: ${filePath} (No es un .log)`);
+    console.log(chalk.red(`Archivo ignorado: ${filePath} (No es un .log)`));
   }
 });
+

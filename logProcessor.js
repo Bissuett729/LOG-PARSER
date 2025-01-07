@@ -1,4 +1,6 @@
-module.exports.processLog = (logContent) => {
+import chalk from "chalk";
+
+export const processLog = (logContent) => {
     // Expresiones regulares para capturar información
     const finalStatusRegex = /Final status:\s*(.+)/g;
     const startTimeRegex = /Start time\s*:\s*(.+)/g;
@@ -24,27 +26,6 @@ module.exports.processLog = (logContent) => {
     while ((match = endTimeRegex.exec(logContent)) !== null) {
       endTimes.push(match[1]); // Captura solo el contenido después de "End time"
     }
-  
-    // Mostrar resultados
-    console.log('Estados finales encontrados:');
-    finalStatuses.forEach((status, index) => {
-      console.log(`${index + 1}: ${status}`);
-    });
-  
-    console.log('\nTiempos de inicio encontrados:');
-    startTimes.forEach((time, index) => {
-      console.log(`${index + 1}: ${time}`);
-    });
-  
-    console.log('\nTiempos de fin encontrados:');
-    endTimes.forEach((time, index) => {
-      console.log(`${index + 1}: ${time}`);
-    });
-
-    console.log();
-    console.log('=====================================');
-    console.log();
-    console.log();
   
     // Retornar los resultados en caso de querer usarlos en otra parte del código
     return { finalStatuses, startTimes, endTimes };
